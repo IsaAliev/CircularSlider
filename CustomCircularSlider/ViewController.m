@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "IACircularSlider.h"
+
 @interface ViewController ()
 @property (strong, nonatomic) IACircularSlider* slider;
 @property (strong, nonatomic) UILabel* label;
@@ -17,27 +18,31 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-        
+    
+    
     IACircularSlider* slider = [[IACircularSlider alloc] initWithFrame:CGRectZero];
     [self.view addSubview:slider];
+
     
     slider.trackHighlightedTintColor = [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
     slider.thumbTintColor = [UIColor whiteColor];
     slider.trackTintColor = [UIColor lightGrayColor];
     slider.thumbHighlightedTintColor = [UIColor whiteColor];
-    slider.trackWidth = 2;
+    slider.trackWidth = 20;
     slider.thumbWidth = 25;
     
+    
     slider.minimumValue = 0;
-    slider.startAngle = 0;
-    slider.endAngle = 2*M_PI;
+    slider.startAngle = M_PI/4;
+    slider.endAngle = 3*M_PI/4;
+    slider.clockwise = NO;
     
     UILabel* label = [[UILabel alloc] init];
     [label setFrame:CGRectMake(100, 175, 200, 50)];
     [label setTextAlignment:NSTextAlignmentCenter];
     [label setBackgroundColor:[UIColor clearColor]];
     [label  setTextColor:[UIColor blackColor]];
-    [label setFont:[UIFont systemFontOfSize:14.f]];
+    [label setFont:[UIFont systemFontOfSize:26.f]];
     [self.view addSubview:label];
     self.label = label;
     
@@ -46,8 +51,11 @@
     
     self.slider = slider;
     
+    [self.slider setThumbImage:[UIImage imageNamed:@"slide"]];
     // Do any additional setup after loading the view, typically from a nib.
 }
+
+
 
 -(void)handleValue:(IACircularSlider*)slider{
     self.label.text = [NSString stringWithFormat:@"%.00f", slider.value];
@@ -55,6 +63,7 @@
 
 -(void)viewDidLayoutSubviews{
     [self.slider setFrame:CGRectMake(100, 100, 200, 200)];
+
 }
 
 

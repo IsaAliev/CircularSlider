@@ -18,5 +18,5 @@
 
 @property (assign, nonatomic) BOOL isHighlighted;
 
-//-(void)setImage:(UIImage*)image;
+-(void)setImage:(UIImage*)image;
 @end

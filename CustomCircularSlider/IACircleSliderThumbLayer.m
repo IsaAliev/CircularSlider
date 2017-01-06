@@ -12,9 +12,13 @@
 
 @implementation IACircleSliderThumbLayer
 {
-    CALayer* _imageLayer;
+    BOOL _hasImage;
+    UIImage* _image;
 }
 -(void)drawInContext:(CGContextRef)ctx{
+    [super drawInContext:ctx];
+    if (!_hasImage) {
+
     CGRect thumbFrame = CGRectInset(self.bounds, 2.f, 2.f);
     UIBezierPath* path = [UIBezierPath
                           bezierPathWithRoundedRect:
@@ -45,21 +49,16 @@
         CGContextAddPath(ctx, path.CGPath);
         CGContextFillPath(ctx);
     }
-
-}
-/*
--(void)setImage:(UIImage*)image{
-    if (!_imageLayer) {
-        CALayer* layer = [[CALayer alloc] init];
-        [layer setFrame:CGRectInset(self.bounds, 2.f, 2.f)];
-        layer.contents = (id)image.CGImage;
-        [self addSublayer:layer];
-        _imageLayer = layer;
-        [self setNeedsDisplay];
-    }else{
-        _imageLayer.contents = (id)image.CGImage;
+    }else {
+        CGContextDrawImage(ctx, self.bounds, _image.CGImage);
     }
-
 }
-*/
+
+-(void)setImage:(UIImage*)image{
+    
+    _hasImage = image != nil;
+    _image  = image;
+    [self setNeedsDisplay];
+}
+
 @end

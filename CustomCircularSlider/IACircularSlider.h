@@ -29,4 +29,6 @@ IB_DESIGNABLE
 
 @property (assign, nonatomic) IBInspectable CGFloat trackWidth;
 @property (assign, nonatomic) IBInspectable CGFloat thumbWidth;
+
+-(void)setThumbImage:(UIImage*)thumbImage;
 @end

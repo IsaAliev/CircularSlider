@@ -8,6 +8,7 @@
 
 #import "IACircularSlider.h"
 #import "IACircleSliderThumbLayer.h"
+
 #import "IACircularSliderTrackLayer.h"
 @implementation IACircularSlider
 {
@@ -38,10 +39,6 @@
 
 }
 
--(void)setThumbImage:(UIImage*)image{
-    [_thumbLayer setImage:image];
-}
-
 -(void)updateLayers{
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
@@ -66,6 +63,10 @@
     
 }
 
+-(void)setThumbImage:(UIImage*)thumbImage{
+    [_thumbLayer setImage:thumbImage];
+    
+}
 
 
 
