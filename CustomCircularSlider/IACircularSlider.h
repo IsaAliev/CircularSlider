@@ -30,5 +30,19 @@ IB_DESIGNABLE
 @property (assign, nonatomic) IBInspectable CGFloat trackWidth;
 @property (assign, nonatomic) IBInspectable CGFloat thumbWidth;
 
+@property (strong, nonatomic, readonly) UIColor* trackHighlightedGradientFirstColor;
+@property (strong, nonatomic, readonly) UIColor* trackHighlightedGradientSecondColor;
+@property (assign, nonatomic, readonly) CGPoint trackHighlightedGradientColorsLocations;
+@property (assign, nonatomic, readonly) BOOL isTrackHighlightedGradient;
+@property (assign, nonatomic, readonly) CGPoint gradientStartPoint;
+@property (assign, nonatomic, readonly) CGPoint gradientEndPoint;
+
+-(void)setGradientColorForHighlightedTrackWithFirstColor:(UIColor*)firstColor
+                               secondColor:(UIColor*)secondColor
+                                         colorsLocations:(CGPoint)locations
+                                              startPoint:(CGPoint)startPoint
+                                             andEndPoint:(CGPoint)endPoint;
+-(void)removeGradient;
+
 -(void)setThumbImage:(UIImage*)thumbImage;
 @end

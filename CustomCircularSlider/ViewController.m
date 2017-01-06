@@ -33,9 +33,14 @@
     
     
     slider.minimumValue = 0;
-    slider.startAngle = M_PI/4;
-    slider.endAngle = 3*M_PI/4;
-    slider.clockwise = NO;
+    slider.startAngle = 0;
+    slider.endAngle = 7*M_PI/4;
+    slider.clockwise = YES;
+    
+    CGPoint start = CGPointMake(200, 100);
+    CGPoint end = CGPointMake(0, 100);
+    
+    [slider setGradientColorForHighlightedTrackWithFirstColor:[UIColor orangeColor] secondColor:[UIColor blueColor] colorsLocations:CGPointMake(0.3, 0.9) startPoint:start andEndPoint:end];
     
     UILabel* label = [[UILabel alloc] init];
     [label setFrame:CGRectMake(100, 175, 200, 50)];
@@ -63,7 +68,7 @@
 
 -(void)viewDidLayoutSubviews{
     [self.slider setFrame:CGRectMake(100, 100, 200, 200)];
-
+    
 }
 
 

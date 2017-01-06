@@ -31,14 +31,6 @@
     return self;
 }
 
--(void)setFrame:(CGRect)frame{
-    [super setFrame:frame];
-    _center = CGPointMake(CGRectGetWidth(frame)/2, CGRectGetHeight(frame)/2);
-    _isInitiallySet = NO;
-    [self updateLayers];
-
-}
-
 -(void)updateLayers{
     [CATransaction begin];
     [CATransaction setDisableActions:YES];
@@ -119,7 +111,6 @@
 -(CGPoint)mapRadianToPoint:(CGFloat)radian{
     return CGPointMake((_center.x-self.trackWidth/2)*cos(radian)+_center.x,
                                                               (( _center.y - self.trackWidth/2)*sin(radian)+_center.y));
-
 }
 
 -(CGFloat)distance{
@@ -218,6 +209,24 @@
     return MIN(radian, [self distance]);
 }
 
+-(void)setGradientColorForHighlightedTrackWithFirstColor:(UIColor*)firstColor
+                                             secondColor:(UIColor*)secondColor
+                                         colorsLocations:(CGPoint)locations
+                                              startPoint:(CGPoint)startPoint
+                                             andEndPoint:(CGPoint)endPoint{
+    _trackHighlightedGradientFirstColor = firstColor;
+    _trackHighlightedGradientSecondColor = secondColor;
+    _trackHighlightedGradientColorsLocations = locations;
+    _isTrackHighlightedGradient = YES;
+    _gradientEndPoint = endPoint;
+    _gradientStartPoint = startPoint;
+    [_trackLayer setNeedsDisplay];
+}
+
+-(void)removeGradient{
+    _isTrackHighlightedGradient = NO;
+    [_trackLayer setNeedsDisplay];
+}
 
 #pragma mark - Setters
 
@@ -296,6 +305,16 @@
     _trackHighlightedTintColor = trackHighlightedTintColor;
     [self updateLayers];
 }
+
+
+-(void)setFrame:(CGRect)frame{
+    [super setFrame:frame];
+    _center = CGPointMake(CGRectGetWidth(frame)/2, CGRectGetHeight(frame)/2);
+    _isInitiallySet = NO;
+    [self updateLayers];
+    
+}
+
 
 #pragma mark - Tracking
 
