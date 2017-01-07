@@ -28,13 +28,13 @@
     slider.thumbTintColor = [UIColor whiteColor];
     slider.trackTintColor = [UIColor lightGrayColor];
     slider.thumbHighlightedTintColor = [UIColor whiteColor];
-    slider.trackWidth = 20;
+    slider.trackWidth = 25;
     slider.thumbWidth = 25;
     
     
     slider.minimumValue = 0;
-    slider.startAngle = 0;
-    slider.endAngle = 7*M_PI/4;
+    slider.startAngle = M_PI/2;
+    slider.endAngle = 3*M_PI/4;
     slider.clockwise = YES;
     
     CGPoint start = CGPointMake(200, 100);
@@ -56,14 +56,29 @@
     
     self.slider = slider;
     
-    [self.slider setThumbImage:[UIImage imageNamed:@"slide"]];
+    //[self.slider setThumbImage:[UIImage imageNamed:@"slide"]];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
+- (IBAction)trackW:(UISlider *)sender {
+    _slider.trackWidth = sender.value;
+}
 
+- (IBAction)switch1:(UISwitch *)sender {
+    self.slider.clockwise = sender.isOn;
+}
+- (IBAction)thumbWidth:(UISlider *)sender {
+    _slider.thumbWidth = sender.value;
+}
 
 -(void)handleValue:(IACircularSlider*)slider{
     self.label.text = [NSString stringWithFormat:@"%.00f", slider.value];
+}
+- (IBAction)topChanged:(UISlider *)sender {
+    self.slider.endAngle = sender.value;
+}
+- (IBAction)botChanged:(UISlider *)sender {
+    self.slider.startAngle = sender.value;
 }
 
 -(void)viewDidLayoutSubviews{

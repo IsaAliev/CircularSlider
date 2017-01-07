@@ -40,24 +40,26 @@
     if (self.slider.isTrackHighlightedGradient) {
         CGContextSaveGState(ctx);
         CGContextBeginPath(ctx);
+
+        CGFloat rad = self.slider.radian;
+        CGFloat sA = self.slider.startAngle;
+        
         UIBezierPath* hPath = [UIBezierPath bezierPathWithArcCenter:center radius:arcRadius+arcWidth/2
-                                                     startAngle:self.slider.radian
-                                                       endAngle:self.slider.startAngle
+                                                     startAngle:rad
+                                                       endAngle:sA
                                                       clockwise:!self.slider.clockwise];
 
         [hPath addArcWithCenter:[self mapRadianToPoint:self.slider.startAngle] radius:arcWidth/2 startAngle:self.slider.startAngle endAngle:M_PI+self.slider.startAngle clockwise:!self.slider.clockwise];
         
-        [hPath addArcWithCenter:center radius:arcRadius-arcWidth/2 startAngle:self.slider.startAngle endAngle:self.slider.radian clockwise:self.slider.clockwise];
+        [hPath addArcWithCenter:center radius:arcRadius-arcWidth/2 startAngle:sA endAngle:rad clockwise:self.slider.clockwise];
         
         [hPath addArcWithCenter:[self mapRadianToPoint:self.slider.radian] radius:arcWidth/2 startAngle:self.slider.radian endAngle:M_PI+self.slider.radian clockwise:self.slider.clockwise];
-        
-        
         
         [hPath closePath];
         
         CGContextAddPath(ctx, hPath.CGPath);
         CGContextEOClip(ctx);
-    
+        
         NSArray* colors = [NSArray
                            arrayWithObjects:(id)self.slider.trackHighlightedGradientFirstColor.CGColor,
                            (id)self.slider.trackHighlightedGradientSecondColor.CGColor, nil];
@@ -70,7 +72,8 @@
         CGGradientRef gradient =  CGGradientCreateWithColors(colorSpace, (CFArrayRef)colors, colorLocations);
     
         CGContextDrawLinearGradient(ctx, gradient, self.slider.gradientStartPoint, self.slider.gradientEndPoint, 0);
-            CGContextRestoreGState(ctx);
+        
+        CGContextRestoreGState(ctx);
     }else{
         UIBezierPath* hPath = [UIBezierPath bezierPathWithArcCenter:center radius:arcRadius
                                                          startAngle:self.slider.startAngle

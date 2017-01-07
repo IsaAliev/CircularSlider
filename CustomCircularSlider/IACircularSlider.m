@@ -10,12 +10,14 @@
 #import "IACircleSliderThumbLayer.h"
 
 #import "IACircularSliderTrackLayer.h"
+
+
 @implementation IACircularSlider
 {
     IACircularSliderTrackLayer* _trackLayer;
     IACircleSliderThumbLayer* _thumbLayer;
     CGPoint _center;
-    CGPoint _lastPosition;
+    UITouch* _lastTouch;
     CGFloat _rad;
     BOOL _isInitiallySet;
 }
@@ -38,13 +40,14 @@
     [_trackLayer setFrame:CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame))];
     [_trackLayer setNeedsDisplay];
     
-    self.radian = [self radianForValue:self.value];
+    //self.radian = [self radianForValue:self.value];
     
     CGPoint point = [self mapRadianToPoint:self.radian];
     
     if (!_isInitiallySet) {
         point = [self mapRadianToPoint:[self radianForValue:self.value]];
         _isInitiallySet = YES;
+        self.radian = [self radianForValue:self.value];
     }
     
     [_thumbLayer setFrame:CGRectMake(point.x-self.thumbWidth/2, point.y-self.thumbWidth/2,
@@ -54,13 +57,6 @@
     [CATransaction commit];
     
 }
-
--(void)setThumbImage:(UIImage*)thumbImage{
-    [_thumbLayer setImage:thumbImage];
-    
-}
-
-
 
 -(void)initializeComponents{
     self.minimumValue = 50.0;
@@ -104,8 +100,8 @@
 }
 
 -(CGFloat)valueForRadian:(CGFloat)radian{
-
-    return (radian)*(self.maximumValue-self.minimumValue)/[self distance]+self.minimumValue;
+    CGFloat d = [self distance];
+    return (radian-((2*M_PI-d)/2))*(self.maximumValue-self.minimumValue)/[self distance]+self.minimumValue;
 }
 
 -(CGPoint)mapRadianToPoint:(CGFloat)radian{
@@ -159,24 +155,71 @@
     return val;
 }
 
--(CGFloat)transformRadianForCurrentOptions:(CGFloat)rad{
+-(CGFloat)transformRadianForCurrentOptions:(CGFloat)rad forStartAngle:(CGFloat)startAngle{
     CGFloat val = 0;
     
     if (self.clockwise) {
-            if (rad>self.startAngle) {
-                val =  rad - self.startAngle;
-            }else if (rad<self.startAngle){
-                val = 2*M_PI-self.startAngle+rad;
+            if (rad>startAngle) {
+                val =  rad - startAngle;
+            }else if (rad<startAngle){
+                val = 2*M_PI-startAngle+rad;
             }
     }else{
-        if (rad>self.startAngle) {
-            val = 2*M_PI -rad + self.startAngle;
-        }else if (rad<self.startAngle){
-            val = self.startAngle-rad;
+        if (rad>startAngle) {
+            val = 2*M_PI -rad + startAngle;
+        }else if (rad<startAngle){
+            val = startAngle-rad;
         }
     }
     
     return val;
+}
+
+-(CGFloat)reverseTransformForModifiedStartAngleToDefault:(CGFloat)rad{
+    CGFloat val = 0;
+    CGFloat startAngle = [self transformedStartAngle];
+    
+    if (self.clockwise) {
+        if (rad>startAngle) {
+            val =  rad + startAngle;
+        }else if (rad<=startAngle){
+            val = -2*M_PI+startAngle+rad;
+        }
+    }else{
+        if (rad>startAngle) {
+            val = 2*M_PI - rad + startAngle;
+        }else if (rad<startAngle){
+            val = startAngle-rad;
+        }
+    }
+    
+    return val;
+}
+
+-(CGFloat)transformedStartAngle{
+    CGFloat sA = self.startAngle;
+    CGFloat offset = (2*M_PI - [self distance])/2;
+    if (sA>self.endAngle) {
+        if (self.clockwise) {
+            return sA-offset;
+        }else{
+            CGFloat v = sA+offset;
+            if (v>2*M_PI) {
+                v -= 2*M_PI;
+            }
+            return v;
+        }
+    }else{
+        if (self.clockwise) {
+            CGFloat v = self.endAngle+offset;
+            if (v>2*M_PI) {
+                v -= 2*M_PI;
+            }
+            return v;
+        }else{
+            return sA+offset;
+        }
+    }
 }
 
 -(CGFloat)reverseTransformRadian:(CGFloat)val{
@@ -206,7 +249,9 @@
 }
 
 -(CGFloat)boundRadianForRadian:(CGFloat)radian{
-    return MIN(radian, [self distance]);
+    CGFloat d = [self distance];
+    CGFloat tSa = (2*M_PI-d)/2;
+    return MAX(MIN(tSa+d, radian), tSa);
 }
 
 -(void)setGradientColorForHighlightedTrackWithFirstColor:(UIColor*)firstColor
@@ -228,6 +273,12 @@
     [_trackLayer setNeedsDisplay];
 }
 
+-(void)setThumbImage:(UIImage*)thumbImage{
+    [_thumbLayer setImage:thumbImage];
+    
+}
+
+
 #pragma mark - Setters
 
 -(void)setStartAngle:(CGFloat)startAngle{
@@ -235,6 +286,7 @@
         [NSException raise:@"Invalid value of startAngle" format:@"startAngle must be more than 0 and less than 2PI"];
     }
     _startAngle = startAngle;
+    [self calculateForTouch:_lastTouch];
     [self updateLayers];
 }
 
@@ -243,6 +295,7 @@
         [NSException raise:@"Invalid value of endAngle" format:@"endAngle must be more than 0 and less than 2PI"];
     }
     _endAngle = endAngle;
+    [self calculateForTouch:_lastTouch];
     [self updateLayers];
 }
 
@@ -316,28 +369,23 @@
 }
 
 
+
 #pragma mark - Tracking
 
 -(BOOL)beginTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event{
     if (CGRectContainsPoint(_thumbLayer.frame, [touch locationInView:self])) {
         _thumbLayer.isHighlighted = YES;
-        _lastPosition = [touch locationInView:self];
         return YES;
         
     }
+
     return NO;
 }
 
 -(BOOL)continueTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event{
     
-    CGFloat preRad = [self radianForPoint:[touch locationInView:self]];
-    
-    _rad = preRad;
-    
-    CGFloat radian = [self transformRadianForCurrentOptions:preRad];
-    
-    self.value = [self boundValueForValue:[self valueForRadian:radian]];
-    
+    [self calculateForTouch:touch];
+    _lastTouch = touch;
     [self updateLayers];
     
     [self sendActionsForControlEvents:UIControlEventValueChanged];
@@ -345,10 +393,26 @@
     return YES;
 }
 
+-(void)calculateForTouch:(UITouch*)touch{
+    CGFloat preRad = [self radianForPoint:[touch locationInView:self]]; //radian from east
+    
+    CGFloat transN = [self transformRadianForCurrentOptions:preRad forStartAngle:[self transformedStartAngle]];
+    
+    CGFloat boundRadianTN = [self boundRadianForRadian:transN];
+    
+    CGFloat reversedBoundValue = [self reverseTransformForModifiedStartAngleToDefault:boundRadianTN];
+    
+    self.radian = reversedBoundValue;
+
+    self.value = [self boundValueForValue:[self valueForRadian:transN]];
+}
+
 -(void)endTrackingWithTouch:(UITouch *)touch withEvent:(UIEvent *)event{
     _thumbLayer.isHighlighted = NO;
     [_thumbLayer setNeedsDisplay];
 }
+
+
 
 /*
 // Only override drawRect: if you perform custom drawing.
