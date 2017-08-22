@@ -6,7 +6,7 @@
 Add IACircularSlider, IACircularSliderTrackLayer, IACircleSliderThumbLayer .h.m files in your project, than `#import` 
 IACircularSlider.h where you want to use the slider.
 
-#Features
+# Features
 
 - Track Color
 - Highlighted Track Color
@@ -17,8 +17,8 @@ IACircularSlider.h where you want to use the slider.
 - Track's and Thumb's width
 - Setting Minimum and Maximum Value
 
-#Example
-##Code
+# Example
+## Code
 In viewDidLoad:
 ``` objective-c
     
@@ -49,6 +49,6 @@ In viewDidLayoutSubviews:
 ``` objective-c
     [self.slider setFrame:CGRectMake(100, 100, 200, 200)];
 ```
-##Result
+## Result
 ![alt result](https://pp.vk.me/c604524/v604524074/4424d/ZHMpIVUSxrg.jpg)
 
