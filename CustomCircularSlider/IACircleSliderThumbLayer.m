@@ -9,7 +9,6 @@
 #import "IACircleSliderThumbLayer.h"
 #import "IACircularSlider.h"
 
-
 @implementation IACircleSliderThumbLayer
 {
     BOOL _hasImage;
@@ -50,7 +49,10 @@
         CGContextFillPath(ctx);
     }
     }else {
-        CGContextDrawImage(ctx, self.bounds, _image.CGImage);
+        UIGraphicsPushContext(ctx);
+        [_image drawInRect:self.bounds];
+        UIGraphicsPopContext();
+
     }
 }
 

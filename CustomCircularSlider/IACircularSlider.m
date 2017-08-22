@@ -39,9 +39,7 @@
     
     [_trackLayer setFrame:CGRectMake(0, 0, CGRectGetWidth(self.frame), CGRectGetHeight(self.frame))];
     [_trackLayer setNeedsDisplay];
-    
-    //self.radian = [self radianForValue:self.value];
-    
+
     CGPoint point = [self mapRadianToPoint:self.radian];
     
     if (!_isInitiallySet) {

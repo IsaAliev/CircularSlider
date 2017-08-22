@@ -31,7 +31,6 @@
     slider.trackWidth = 25;
     slider.thumbWidth = 25;
     
-    
     slider.minimumValue = 0;
     slider.startAngle = M_PI/2;
     slider.endAngle = 3*M_PI/4;
@@ -56,7 +55,6 @@
     
     self.slider = slider;
     
-    //[self.slider setThumbImage:[UIImage imageNamed:@"slide"]];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
